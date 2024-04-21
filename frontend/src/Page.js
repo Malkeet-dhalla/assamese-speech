@@ -13,22 +13,24 @@ import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import { MdOutlineTranslate } from "react-icons/md";
 import { CgTranscript } from "react-icons/cg";
 import { SlSpeech } from "react-icons/sl";
+import { FaQuestion } from "react-icons/fa6";
+import Tasks from './Tasks';
 
 const Page = () => {
 	const [model, setModel] = useState('');
-	const [task, setTask] = useState('');
 	const [audioFile, setAudioFile] = useState(null);
 	const [outputText, setOutputText] = useState('');
 	const [audioUrl, setAudioUrl] = useState('');
 	const audioBlob = useRef(null);
 	const [isLoaded, setIsLoaded] = useState(true);
 
-	const models = ['xlsr-large-53', 'xls-r-300m', 'indicwav2vec'];
+	const models = ['xlsr-large-53', 'xls-r-300m', 'indicwav2vec', 'whisper'];
 	const tasks = [
-		{ name: 'Transcript', icon: <CgTranscript /> },
-		{ name: 'Translate', icon: <MdOutlineTranslate /> },
-		{ name: 'Conversation', icon: <SlSpeech /> },
+		{ name: 'Transcript', icon: <CgTranscript />, color: "secondary" },
+		{ name: 'Translate', icon: <MdOutlineTranslate />, color: "danger"},
+		{ name: 'Question', icon: <FaQuestion />, color: "success" },
 	];
+	const [task, setTask] = useState(tasks[0].name);
 	const handleModelChange = (event, newValue) => {
 		setModel(newValue);
 	};
@@ -96,7 +98,7 @@ const Page = () => {
 
 		return (
 			<React.Fragment>
-				<ListItemDecorator sx={{mr: 2}}>
+				<ListItemDecorator sx={{ mr: 2 }}>
 					{tasks.find((o) => o.name === option.value)?.icon}
 				</ListItemDecorator>
 				{option.label}
@@ -123,31 +125,11 @@ const Page = () => {
 						</FormControl>
 					</Box>
 					<Box sx={{ marginTop: 2 }}>
-						<FormControl>
-							<Select
-								id="task"
-								value={task}
-								onChange={handleTaskChange}
-								size="lg"
-								placeholder="Select a task..."
-								renderValue={renderValue}
-							>
-								{
-									tasks.map(
-										(task) =>
-											<Option
-												value={task.name}
-												key={task.name}
-											>
-												<ListItemDecorator>
-													{task.icon}
-												</ListItemDecorator>
-												{task.name}
-											</Option>
-									)
-								}
-							</Select>
-						</FormControl>
+						<Tasks 
+							tasks={tasks}
+							currentTask={task}
+							onChange={handleTaskChange}
+						/>
 					</Box>
 					<Box sx={{ marginTop: 2 }}>
 						<AudioRecorder
@@ -168,17 +150,22 @@ const Page = () => {
 							style={{ display: 'none' }}
 						/>
 						<label htmlFor="audio-file">
-							<Button variant="solid" component="span">
+							<Button variant="outlined" component="span">
 								Upload Audio
 							</Button>
-							{audioFile && <Typography>{audioFile.name}</Typography>}	
+							{audioFile && <Typography>{audioFile.name}</Typography>}
 						</label>
 					</Box>
 					<Box sx={{ marginTop: 2 }}>
 						{audioUrl && <Audio url={audioUrl} />}
 					</Box>
 					<Box sx={{ marginTop: 2 }}>
-						<Button variant="solid" onClick={handleSendToAPI} disabled={!(model && task && audioUrl)}>
+						<Button
+							variant="solid"
+							size="lg"
+							onClick={handleSendToAPI}
+							disabled={!(model && task && audioUrl)}
+						>
 							Send
 						</Button>
 					</Box>
@@ -189,7 +176,7 @@ const Page = () => {
 							<Textarea
 								id="output-text"
 								minRows={10}
-								variant="outlined"
+								variant="soft"
 								value={outputText}
 								readOnly
 							/>
