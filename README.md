@@ -1,8 +1,6 @@
-# Setup
-
 ## Backend
 
-In backend directory
+In the backend directory
 
 ### Setup
 
@@ -26,7 +24,7 @@ Run this to activate your venv
 
 Leave this running in a shell. Make sure the program is not stopped.
 
-`python3 -m flask run --host=0.0.0.0`
+`python3 -m flask run --host=0.0.0.0 --debug`
 
 
 ## Frontend
@@ -37,6 +35,7 @@ In the frontend directory
 Install nodejs and npm
 
 Run only once
+
 `npm install`
 
 ### Run
