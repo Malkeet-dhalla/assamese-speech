@@ -13,7 +13,6 @@ import FormLabel from '@mui/joy/FormLabel';
 import Box from '@mui/joy/Box';
 import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
 import Audio from './Audio';
-import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import { MdOutlineTranslate } from "react-icons/md";
 import { CgTranscript } from "react-icons/cg";
 import { MdOutlineCloudUpload } from "react-icons/md";
@@ -46,7 +45,6 @@ const Page = () => {
 	useEffect(() => {
 		if (recorderControls.recordingTime >= recordingTimeLimit) {
 			recorderControls.stopRecording();
-			handleAudioRecord(recorderControls.recordingBlob);
 		}
 	}, [recorderControls.recordingTime])
 
@@ -60,6 +58,7 @@ const Page = () => {
 	};
 
 	const handleAudioRecord = (blob) => {
+		console.log(blob);
 		const url = URL.createObjectURL(blob);
 		audioBlob.current = blob;
 		setAudioFile(null);
