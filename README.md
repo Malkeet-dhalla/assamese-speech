@@ -1,3 +1,9 @@
+# With Docker 
+1. Install docker and docker-compose
+2. From the project root directory, run `docker-compose up`
+3. Go to `localhost:3000`.
+
+# Without Docker
 ## Backend
 
 In the backend directory
