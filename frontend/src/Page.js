@@ -1,11 +1,15 @@
+import './Page.css';
+import './AudioRecorder.css';
+
 import React, { useRef, useState } from 'react';
-import { Grid, CircularProgress } from '@mui/joy';
+import { Grid, CircularProgress, Divider } from '@mui/joy';
 import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
 import Option from '@mui/joy/Option';
 import Select from '@mui/joy/Select';
 import Textarea from '@mui/joy/Textarea'
 import Typography from '@mui/joy/Typography';
+import FormLabel from '@mui/joy/FormLabel';
 import Box from '@mui/joy/Box';
 import { AudioRecorder } from 'react-audio-voice-recorder';
 import Audio from './Audio';
@@ -13,24 +17,27 @@ import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import { MdOutlineTranslate } from "react-icons/md";
 import { CgTranscript } from "react-icons/cg";
 import { SlSpeech } from "react-icons/sl";
+import { MdOutlineCloudUpload } from "react-icons/md";
 import { FaQuestion } from "react-icons/fa6";
 import Tasks from './Tasks';
 
 const Page = () => {
-	const [model, setModel] = useState('');
 	const [audioFile, setAudioFile] = useState(null);
 	const [outputText, setOutputText] = useState('');
 	const [audioUrl, setAudioUrl] = useState('');
 	const audioBlob = useRef(null);
 	const [isLoaded, setIsLoaded] = useState(true);
 
-	const models = ['xlsr-large-53', 'xls-r-300m', 'indicwav2vec', 'whisper'];
+	const models = ['whisper', 'xlsr-large-53', 'xls-r-300m', 'indicwav2vec'];
 	const tasks = [
 		{ name: 'Transcript', icon: <CgTranscript />, color: "secondary" },
-		{ name: 'Translate', icon: <MdOutlineTranslate />, color: "danger"},
+		{ name: 'Translate', icon: <MdOutlineTranslate />, color: "danger" },
 		{ name: 'Question', icon: <FaQuestion />, color: "success" },
 	];
+
+	const [model, setModel] = useState(models[0]);
 	const [task, setTask] = useState(tasks[0].name);
+
 	const handleModelChange = (event, newValue) => {
 		setModel(newValue);
 	};
@@ -107,12 +114,14 @@ const Page = () => {
 	}
 
 	return (
-		<div>
-			<Typography variant="h4">Speech Processing App</Typography>
+		<div className="page">
 			<Grid container spacing={2} >
 				<Grid item xs={6}>
 					<Box sx={{ marginTop: 2 }}>
 						<FormControl>
+							<FormLabel id="model-label" htmlFor="model">
+								Model
+							</FormLabel>
 							<Select
 								id="model"
 								value={model}
@@ -125,38 +134,58 @@ const Page = () => {
 						</FormControl>
 					</Box>
 					<Box sx={{ marginTop: 2 }}>
-						<Tasks 
+						<Tasks
 							tasks={tasks}
 							currentTask={task}
 							onChange={handleTaskChange}
 						/>
 					</Box>
-					<Box sx={{ marginTop: 2 }}>
-						<AudioRecorder
-							onRecordingComplete={handleAudioRecord}
-							onNotAllowedOrFound={(err) => console.err(err)}
-							mediaRecorderOptions={{
-								audioBitsPerSecond: 128000,
-							}}
-							showVisualizer={true}
-						/>
+					<Box sx={{ marginTop: 5 }}>
+					<Divider/>
 					</Box>
-					<Box sx={{ marginTop: 2 }}>
-						<input
-							accept="audio/wav"
-							id="audio-file"
-							type="file"
-							onChange={handleFileChange}
-							style={{ display: 'none' }}
-						/>
-						<label htmlFor="audio-file">
-							<Button variant="outlined" component="span">
-								Upload Audio
-							</Button>
-							{audioFile && <Typography>{audioFile.name}</Typography>}
-						</label>
-					</Box>
-					<Box sx={{ marginTop: 2 }}>
+					<Grid container spacing={2}>
+						<Grid item xs={4}>
+							<Box sx={{ marginTop: 2 }}>
+								<input
+									accept="audio/wav"
+									id="audio-file"
+									type="file"
+									onChange={handleFileChange}
+									style={{ display: 'none' }}
+								/>
+								<label htmlFor="audio-file">
+									<Button 
+										variant="outlined" 
+										component="span"
+										startDecorator={<MdOutlineCloudUpload/>}
+									>
+										Upload Audio
+									</Button>
+								</label>
+							</Box>
+						</Grid>
+						<Grid item xs={1}>
+							<Box sx={{ marginTop: 2, paddingTop: 1}}>
+								<Typography color="neutral">or</Typography>
+							</Box>
+						</Grid>
+						<Grid item xs={7}>
+							<Box sx={{ marginTop: 2 }}>
+								<AudioRecorder
+									onRecordingComplete={handleAudioRecord}
+									onNotAllowedOrFound={(err) => console.err(err)}
+									mediaRecorderOptions={{
+										audioBitsPerSecond: 128000,
+									}}
+									showVisualizer={true}
+									classes={{
+										AudioRecorderClass: "audio-recorder-joy",
+									}}
+								/>
+							</Box>
+						</Grid>
+					</Grid>
+					<Box sx={{ marginTop: 2, width: '80%'}}>
 						{audioUrl && <Audio url={audioUrl} />}
 					</Box>
 					<Box sx={{ marginTop: 2 }}>
@@ -171,7 +200,16 @@ const Page = () => {
 					</Box>
 				</Grid>
 				<Grid item xs={6}>
-					<Box sx={{ marginTop: 2 }}>
+					<Box 
+						sx={{ 
+							marginTop: 2,
+							width: 1,
+							height: 1,
+							display: 'flex',
+							justifyContent: "center",
+							alignItems: "center",
+						}} 
+				>
 						{isLoaded ?
 							<Textarea
 								id="output-text"
@@ -179,6 +217,10 @@ const Page = () => {
 								variant="soft"
 								value={outputText}
 								readOnly
+								sx = {{
+									flexGrow: 1,
+									alignSelf: "stretch",
+								}}
 							/>
 							: <CircularProgress variant="soft" />
 						}

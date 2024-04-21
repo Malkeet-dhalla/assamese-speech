@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import Page from './Page';
+import NavBar from './NavBar';
 import { CssBaseline, CssVarsProvider, extendTheme } from '@mui/joy';
 
 const purple = {
@@ -76,6 +77,7 @@ function App() {
 		<div className="App">
 			<CssVarsProvider theme={theme}>
 				<CssBaseline />
+				<NavBar />
 				<Page />
 			</CssVarsProvider>
 		</div>

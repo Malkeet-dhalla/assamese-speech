@@ -1,10 +1,12 @@
+import { Player } from 'react-simple-player';
+
 const Audio = ({url}) => {
 			
-	return (<audio
+	return (<Player
 		src={url}
-		controls={true}
+		height={40}
 		>
-		</audio>)
+		</Player>)
 }
 
 export default Audio;

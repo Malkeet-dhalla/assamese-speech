@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 import torch
 from datasets import load_dataset, Dataset, Audio
-from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
+from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC, pipeline
 from openai import OpenAI
 
 load_dotenv()
@@ -28,37 +28,48 @@ def hello_world():
     return "<p>Hello, world!</p>"
 
 
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
+
 @app.route("/submit", methods=["POST"])
 def submit():
-    model = request.form["model"]
-    task = request.form["task"]
+    model = request.form["model"].lower()
+    task = request.form["task"].lower()
     is_file = request.form["isFile"]
     audio_file = request.files["audio"]
-    print("Converting audio..")
-    if not is_file:
-        audio_file.save("tmp/audio.ogg")
-        ogg_to_wav("tmp/audio.ogg", "tmp/audio.wav")
-    else:
-        audio_file.save("tmp/audio.wav")
+
+    audio_file_path = "tmp/audio.wav"
+    save_audio_file(is_file, audio_file)
 
     print("Transcripting...")
-    audio_dataset = Dataset.from_dict({"audio": ["tmp/audio.wav"]}).cast_column(
-        "audio", Audio(sampling_rate=16_000)
-    )
-    text = transcript(model_name_to_id.get(model), audio_dataset)
+    text = ""
+    if model == "indicwav2vec":
+        text = transcript_wav2vec2(model_name_to_id.get(model), audio_file_path)
+    elif model == "whisper":
+        text = transcript_whisper()
     print(f"Transcripted text: {text}")
+
+    print(f"Clearing transcripted text...")
     text = clear_transcript(text, "Hindi")
 
     input_language = "Hindi"
     target_language = "English"
 
-    if task.lower() == "translate":
+    if task == "translate":
         text = translate(text, input_language, target_language)
-    elif task.lower() == "question":
+    elif task == "question":
         text = question(text, input_language)
 
-    subprocess.call(["rm", "-r", "tmp/audio.wav", "tmp/audio.ogg"])
+    # subprocess.call(["rm", "-r", "tmp/audio.wav", "tmp/audio.ogg"])
     return {"output": text}
+
+
+def save_audio_file(is_file, audio_file):
+    if not is_file:
+        audio_file.save("tmp/audio.ogg")
+        ogg_to_wav("tmp/audio.ogg", "tmp/audio.wav")
+    else:
+        audio_file.save("tmp/audio.wav")
 
 
 def ogg_to_wav(input_file, output_file):
@@ -66,7 +77,10 @@ def ogg_to_wav(input_file, output_file):
     audio.export(output_file, format="wav")
 
 
-def transcript(model, audio_dataset):
+def transcript_wav2vec2(model, audio_file_path):
+    audio_dataset = Dataset.from_dict({"audio": [audio_file_path]}).cast_column(
+        "audio", Audio(sampling_rate=16_000)
+    )
     if model is None:
         model = "facebook/wav2vec2-base-960h"
     # load model and tokenizer
@@ -108,7 +122,7 @@ def get_gpt_response(system_prompt, user_prompt):
 
 
 def clear_transcript(text, input_language):
-    system_prompt = f"You are given a poorly transcripted {input_language} text. Some of the words are broken, some of the words are wrong. Find words that closely match the wrong words. Fix it so it make sense. Reply in {input_language}"
+    system_prompt = f"You are given a poorly transcripted {input_language} text. Some of the words are broken into multiple words, some of the words are wrong. Find words that closely match the wrong words. Fix it so it make sense. Reply in {input_language}"
     user_prompt = f"Fix this {input_language} text:\n\n {text}"
     text = get_gpt_response(system_prompt, user_prompt)
     return text
@@ -128,3 +142,17 @@ def question(text, input_language):
     user_prompt = f"Question:\n\n{text}"
     text = get_gpt_response(system_prompt, user_prompt)
     return f"{text}"
+
+
+def transcript_whisper():
+    transcribe = pipeline(
+        task="automatic-speech-recognition",
+        model="vasista22/whisper-hindi-small",
+        chunk_length_s=30,
+        device=device,
+    )
+    transcribe.model.config.forced_decoder_ids = (
+        transcribe.tokenizer.get_decoder_prompt_ids(language="hi", task="transcribe")
+    )
+
+    return transcribe("tmp/audio.wav")["text"]
