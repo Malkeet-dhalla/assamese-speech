@@ -15,12 +15,12 @@ const Tasks = ({currentTask, tasks, onChange}) => {
 			>
 			{tasks.map((task) => 
 				<Button
-					key={task.name}
-					value={task.name}
+					key={task.value}
+					value={task.value}
 					startDecorator={task.icon}
 					color={task.color}
 				>
-					{task.name}
+					{task.label}
 				</Button>
 			)}
 		</ToggleButtonGroup>

@@ -22,12 +22,6 @@ model_name_to_id = {
     "indicwav2vec": "theainerd/Wav2Vec2-large-xlsr-hindi",
 }
 
-
-@app.route("/")
-def hello_world():
-    return "<p>Hello, world!</p>"
-
-
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 

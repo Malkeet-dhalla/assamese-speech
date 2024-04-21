@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box } from '@mui/joy';
+import { Avatar, Box } from '@mui/joy';
 import Typography from '@mui/joy/Typography';
 
 export default function HeaderSection() {
@@ -29,6 +29,9 @@ export default function HeaderSection() {
           gap: 1.5,
         }}
       >
+	  	<Avatar
+			src="/iitk_logo.jpg"
+	  	/>
         <Typography component="h1" fontWeight="xl">
 	  		Assamese Speech Processing	
         </Typography>
