@@ -16,6 +16,10 @@ RUN pip3 --version
 
 RUN python3.11 -m pip install --no-cache-dir -r requirements-docker.txt
 
+COPY download_models.py .
+
+RUN python3.11 download_models.py
+
 COPY app.py .
 
 EXPOSE 5000
