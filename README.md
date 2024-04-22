@@ -1,6 +1,9 @@
 # With Docker 
 1. Install docker and docker-compose
-2. From the project root directory, run `docker-compose up`
+3. In backend dir, `cp .env.default .env`
+4. In the .env file add your Openai api key after `OPENAI_API_KEY=`
+5. From the project root directory, run `docker compose build`
+6. `docker compose up`
 3. Go to `localhost:3000`.
 
 # Without Docker
