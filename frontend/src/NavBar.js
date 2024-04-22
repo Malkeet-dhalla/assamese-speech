@@ -33,7 +33,7 @@ export default function HeaderSection() {
 			src="/iitk_logo.jpg"
 	  	/>
         <Typography component="h1" fontWeight="xl">
-	  		Assamese Speech Processing	
+	  		Assamese Speech Processing
         </Typography>
       </Box>
 

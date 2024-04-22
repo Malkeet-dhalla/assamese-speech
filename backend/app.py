@@ -44,6 +44,7 @@ def submit():
     print(f"Transcripted text: {text}")
 
     print(f"Clearing transcripted text...")
+    raw_text = text
     text = clear_transcript(text, "Hindi")
 
     input_language = "Hindi"
@@ -55,7 +56,7 @@ def submit():
         text = question(text, input_language)
 
     # subprocess.call(["rm", "-r", "tmp/audio.wav", "tmp/audio.ogg"])
-    return {"output": text}
+    return {"output": text, "raw_text": raw_text}
 
 
 def save_audio_file(is_file, audio_file):

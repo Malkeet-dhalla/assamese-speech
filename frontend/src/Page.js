@@ -18,10 +18,12 @@ import { CgTranscript } from "react-icons/cg";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import { FaQuestion } from "react-icons/fa6";
 import Tasks from './Tasks';
+import RawTranscript from './RawTranscript';
 
 const Page = () => {
 	const [audioFile, setAudioFile] = useState(null);
 	const [outputText, setOutputText] = useState('');
+	const [rawText, setRawText] = useState('');
 	const [audioUrl, setAudioUrl] = useState('');
 	const audioBlob = useRef(null);
 	const [isLoaded, setIsLoaded] = useState(true);
@@ -98,6 +100,7 @@ const Page = () => {
 				console.log(data);
 				setIsLoaded(true);
 				setOutputText(data.output)
+				setRawText(data.raw_text)
 			})
 			.catch((err) => {
 				setIsLoaded(true);
@@ -220,6 +223,9 @@ const Page = () => {
 							/>
 							: <CircularProgress variant="soft" />
 						}
+					</Box>
+					<Box sx={{ marginTop: 2 }}>
+						{isLoaded && <RawTranscript text={rawText} />}
 					</Box>
 				</Grid>
 			</Grid>
