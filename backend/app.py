@@ -32,7 +32,7 @@ def submit():
     is_file = request.form["isFile"]
     audio_file = request.files["audio"]
 
-    audio_file_path = "tmp/audio.wav"
+    audio_file_path = "audio.wav"
     save_audio_file(is_file, audio_file)
 
     print("Transcripting...")
@@ -60,10 +60,10 @@ def submit():
 
 def save_audio_file(is_file, audio_file):
     if not is_file:
-        audio_file.save("tmp/audio.ogg")
-        ogg_to_wav("tmp/audio.ogg", "tmp/audio.wav")
+        audio_file.save("audio.ogg")
+        ogg_to_wav("audio.ogg", "audio.wav")
     else:
-        audio_file.save("tmp/audio.wav")
+        audio_file.save("audio.wav")
 
 
 def ogg_to_wav(input_file, output_file):
@@ -149,4 +149,4 @@ def transcript_whisper():
         transcribe.tokenizer.get_decoder_prompt_ids(language="hi", task="transcribe")
     )
 
-    return transcribe("tmp/audio.wav")["text"]
+    return transcribe("audio.wav")["text"]

@@ -8,13 +8,13 @@ RUN apt-get update && apt-get install -y software-properties-common \
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY requirements-docker.txt .
 
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 
 RUN pip3 --version
 
-RUN python3.11 -m pip install --no-cache-dir -r requirements.txt
+RUN python3.11 -m pip install --no-cache-dir -r requirements-docker.txt
 
 COPY app.py .
 
